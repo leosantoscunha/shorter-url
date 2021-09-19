@@ -1,5 +1,5 @@
 // import { Chance } from 'chance';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import { ShorterUrlController } from '../../app/controllers/ShorterUrlController';
 
 // const chance = new Chance();
@@ -14,5 +14,6 @@ describe('Shorter Url Service', () => {
     }
     const httpReponse = shorterUrlController.handle(httpRequest);
     expect(httpReponse.statusCode).to.equal(400)
+    expect(httpReponse.body).to.be.an('error')
   });
 });
