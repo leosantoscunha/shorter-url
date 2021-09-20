@@ -3,13 +3,20 @@ import { Url } from "../dtos/Url"
 export class InMemory implements URLRepository {
   private urlList: Array<Url> = [];
 
-  store(urlOriginal: string, newUrl: string): Promise<Url[] | null> {
+  store(urlOriginal: string, newUrl: string): Url {
     this.urlList.push({ urlOriginal, newUrl });
-    return Promise.resolve(this.urlList);
+    return {
+      urlOriginal: urlOriginal,
+      newUrl: newUrl
+    };
   }
 
-  get(urlOr: string): Promise<string | null> {
-    const url = this.urlList.find(({ urlOriginal }) => urlOriginal === urlOr);
-    return Promise.resolve(url !== undefined ? url.newUrl : null);
+  get(urlOr: string): string | null {
+    const url = this.urlList.find(({ newUrl }) => {
+      return newUrl === urlOr
+    });
+    return url !== undefined ? url.urlOriginal : null;
   }
+
+  
 }

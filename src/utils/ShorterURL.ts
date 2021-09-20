@@ -1,11 +1,15 @@
-export class ShorterURL {
-  static encode(urlOriginal: string): string {
-    let url = urlOriginal;
+const domail = 'http://localhost:3333/'
 
-    const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+export class ShorterURL {
+  static getNewUrl(): string {
+    return `${domail}/${this.genarateCode()}`
+  }
+
+  static genarateCode () {
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < 5; i++)
-      url += possible.charAt(Math.floor(Math.random() * possible.length));
-    return url;
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
   }
 }

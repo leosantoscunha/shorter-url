@@ -28,7 +28,11 @@ export class ShorterUrlController implements Controller {
       return fail(new InvalidParamError("url"));
     }
 
-    return success({});
+    const url = this.urlRepository.get(
+      httpRequest.body.url,
+    );
+
+    return success({ url });
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -36,7 +40,7 @@ export class ShorterUrlController implements Controller {
     if (!httpRequest.body.url) {
       return fail(new MissingParamError("url"));
     }
-    console.log(httpRequest.body.url)
+
     const isValid = this.urlValidator.isValid(httpRequest.body.url);
     if (!isValid) {
       return fail(new InvalidParamError("url"));
@@ -44,9 +48,10 @@ export class ShorterUrlController implements Controller {
     
     const url = this.urlRepository.store(
       httpRequest.body.url,
-      ShorterURL.encode(httpRequest.body.url)
+      ShorterURL.getNewUrl()
     );
-    return success({ url });
+
+    return success({ url: url.newUrl });
   }
 
   // redirect(httpRequest: any): any {
