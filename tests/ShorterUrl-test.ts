@@ -4,6 +4,7 @@ import { expect } from "chai";
 
 import { URLValidator } from "../src/protocols/URLValidator";
 import { ShorterUrlController } from "../src/controllers/ShorterUrlController";
+import { InvalidParamError } from "../src/errors/InvalidParamError";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sinon = require("sinon");
@@ -33,6 +34,8 @@ describe("Shorter Url Service", () => {
     const httpReponse = shorterUrlController.handle(httpRequest);
     expect(httpReponse.statusCode).to.equal(400);
     expect(httpReponse.body).to.be.an("error");
+    expect(httpReponse.body.name).to.be.equal("MissingParamError");
+    expect(httpReponse.body.message).to.be.equal("Missing param: url");
   });
 
   it("shound return 400 if an invalid url is provided", () => {
@@ -50,9 +53,11 @@ describe("Shorter Url Service", () => {
     const httpReponse = shorterUrlController.handle(httpRequest);
     expect(httpReponse.statusCode).to.equal(400);
     expect(httpReponse.body).to.be.an("error");
+    expect(httpReponse.body.name).to.be.equal("InvalidParamError");
+    expect(httpReponse.body.message).to.be.equal("Invalid param: url");
   });
 
-  it("shound return 200 if an valid url is provided", () => {
+  it("shound call URLValidator 200 if an valid url is provided", () => {
     const { shorterUrlController } = makeShorterUrlController();
 
     const httpRequest = {
