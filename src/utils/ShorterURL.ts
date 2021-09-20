@@ -2,7 +2,7 @@ const domail = 'http://localhost:3333/'
 
 export class ShorterURL {
   static getNewUrl(): string {
-    return `${domail}/${this.genarateCode()}`
+    return `${domail}${this.genarateCode()}`
   }
 
   static genarateCode () {

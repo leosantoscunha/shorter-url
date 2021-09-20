@@ -48,7 +48,7 @@ describe("Shorter Url Service", () => {
 
   });
 
-  it("shound return 400 if no url is provided when encode", () => {
+  it("should return 400 if no url is provided when encode", () => {
     const { shorterUrlController } = makeShorterUrlController();
     const httpRequest = {
       body: {},
@@ -60,7 +60,7 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.body.message).to.be.equal("Missing param: url");
   });
 
-  it("shound return 400 if an invalid url is provided when encode", () => {
+  it("should return 400 if an invalid url is provided when encode", () => {
     const { shorterUrlController, urlValidatorStub } =
       makeShorterUrlController();
     const isValid = sinon.stub(urlValidatorStub, "isValid");
@@ -79,7 +79,7 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.body.message).to.be.equal("Invalid param: url");
   });
 
-  it("shound return 200 if an valid url is provided when encode", () => {
+  it("should return 200 if an valid url is provided when encode", () => {
     const { shorterUrlController, urlValidatorStub } =
       makeShorterUrlController();
 
@@ -93,7 +93,7 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.statusCode).to.equal(200);
   });
   
-  it("shound return 400 if no url is provided when decode", () => {
+  it("should return 400 if no url is provided when decode", () => {
     const { shorterUrlController } = makeShorterUrlController();
     const httpRequest = {
       body: {},
@@ -105,7 +105,7 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.body.message).to.be.equal("Missing param: url");
   });
 
-  it("shound return 400 if an invalid url is provided when decode", () => {
+  it("should return 400 if an invalid url is provided when decode", () => {
     const { shorterUrlController, urlValidatorStub } =
       makeShorterUrlController();
     const isValid = sinon.stub(urlValidatorStub, "isValid");
@@ -124,7 +124,7 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.body.message).to.be.equal("Invalid param: url");
   });
 
-  it("shound return 200 if an valid url is provided when decode", () => {
+  it("should return 200 if an valid url is provided when decode", () => {
     const { shorterUrlController } =
       makeShorterUrlController();
     const mockUrl = 'https://www.musclefood.com/bundles/slimming-meat-hampers.html';

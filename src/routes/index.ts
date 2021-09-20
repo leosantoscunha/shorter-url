@@ -1,23 +1,15 @@
 import { Router } from "express";
-import { ShorterUrlController } from "src/controllers/ShorterUrlController";
-import { URLValidatorAdapter } from "src/utils/URLValidatorAdapter";
-import { InMemory } from "src/database/InMemory";
+import { ShorterUrlController } from "../controllers/ShorterUrlController";
+import { InMemory } from "../database/InMemory";
+import { URLValidatorAdapter } from "../utils/URLValidatorAdapter";
 
 const routes = Router();
+const shorterUrlController = new ShorterUrlController(new URLValidatorAdapter(), new InMemory());
 
-// routes.get(
-//   "/redirect",
-//   new ShorterUrlController(new URLValidatorAdapter()).redirect
-// );
+routes.post("/encode", shorterUrlController.encode);
 
-routes.post(
-  "/encode",
-  new ShorterUrlController(new URLValidatorAdapter(), new InMemory()).encode
-);
+routes.post("/decode",shorterUrlController.decode);
 
-routes.get(
-  "/decode",
-  new ShorterUrlController(new URLValidatorAdapter(), new InMemory()).decode
-);
+routes.get("/:code", shorterUrlController.redirect);
 
 export default routes;

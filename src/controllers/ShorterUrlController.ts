@@ -7,6 +7,7 @@ import { InvalidParamError } from "../errors/InvalidParamError";
 import { fail, success } from "../helpers/Http-helper";
 import { URLRepository } from "../database/URLRepository"
 import Controller from "../protocols/Controller";
+import { InMemory } from "../database/InMemory";
 
 export class ShorterUrlController implements Controller {
   private readonly urlValidator: URLValidator;
@@ -35,7 +36,6 @@ export class ShorterUrlController implements Controller {
     return success({ url });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   encode(httpRequest: HttpRequest): HttpResponse {
     if (!httpRequest.body.url) {
       return fail(new MissingParamError("url"));
@@ -54,9 +54,23 @@ export class ShorterUrlController implements Controller {
     return success({ url: url.newUrl });
   }
 
-  // redirect(httpRequest: any): any {
-  //   const { code } = httpRequest.params;
+  public async redirect(req: any, res:any) {
+    const {code} = req.params
+    
+    if (!code) {
+      return fail(new MissingParamError("code"));
+    }
 
-  //   httpRequest.redirect(url);
-  // }
+    const domain = 'http://localhost:3333/'
+    const url = this.urlRepository.get(
+      domain + code,
+    );
+    console.log('urlRepository: ', url)
+    // const isValid = this.urlValidator.isValid(url||'');
+    // if (!isValid) {
+    //   return fail(new InvalidParamError("url"));
+    // }
+    
+    return res.redirect(300, domain);
+  }
 }

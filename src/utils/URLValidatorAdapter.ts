@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { URLValidator } from "src/protocols/URLValidator";
+import { URLValidator } from "../protocols/URLValidator";
 
 export class URLValidatorAdapter implements URLValidator {
   isValid(url: string): boolean {
