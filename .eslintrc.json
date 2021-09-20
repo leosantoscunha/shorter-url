@@ -18,7 +18,9 @@
         "prettier"
     ],
     "rules": {
+        "allowForLoopAfterthoughts": true,
         "import/prefer-default-export": "off",
+        "class/class-methods-use-this": "off",
         "prettier/prettier": "error",
         "import/extensions": [
             "error",

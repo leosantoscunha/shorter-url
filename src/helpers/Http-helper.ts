@@ -1,13 +1,13 @@
-// import { HttpResponse } from "../protocols/Controller";
+import { HttpResponse } from "src/protocols/Http";
 
-export const fail = (error: Error): any => {
+export const fail = (error: Error): HttpResponse => {
   return {
     statusCode: 400,
     body: error,
   };
 };
 
-export const success = (body: any): any => {
+export const success = (body: any): HttpResponse => {
   return {
     statusCode: 200,
     body,

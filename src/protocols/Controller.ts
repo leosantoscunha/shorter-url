@@ -1,7 +1,8 @@
 import { HttpRequest, HttpResponse } from "./Http";
 
 interface Controller {
-  handle(httpRequest: HttpRequest): HttpResponse;
+  encode(httpRequest: HttpRequest): HttpResponse;
+  decode(httpRequest: HttpRequest): HttpResponse;
 }
 
 export default Controller;

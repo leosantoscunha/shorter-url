@@ -4,7 +4,8 @@ import { expect } from "chai";
 
 import { URLValidator } from "../src/protocols/URLValidator";
 import { ShorterUrlController } from "../src/controllers/ShorterUrlController";
-import { InvalidParamError } from "../src/errors/InvalidParamError";
+import { URLValidatorAdapter } from "../src/utils/URLValidatorAdapter";
+import { InMemory } from "../src/database/InMemory";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sinon = require("sinon");
@@ -18,7 +19,11 @@ const makeShorterUrlController = (): any => {
     }
   }
   const urlValidatorStub = new URLValidatorStub();
-  const shorterUrlController = new ShorterUrlController(urlValidatorStub);
+  const urlRepository = new InMemory();
+  const shorterUrlController = new ShorterUrlController(
+    urlValidatorStub,
+    urlRepository
+  );
   return {
     shorterUrlController,
     urlValidatorStub,
@@ -26,19 +31,31 @@ const makeShorterUrlController = (): any => {
 };
 
 describe("Shorter Url Service", () => {
-  it("shound return 400 if no url is provided", () => {
+  it("shound return 400 if no url is provided when encode", () => {
     const { shorterUrlController } = makeShorterUrlController();
     const httpRequest = {
       body: {},
     };
-    const httpReponse = shorterUrlController.handle(httpRequest);
+    const httpReponse = shorterUrlController.encode(httpRequest);
     expect(httpReponse.statusCode).to.equal(400);
     expect(httpReponse.body).to.be.an("error");
     expect(httpReponse.body.name).to.be.equal("MissingParamError");
     expect(httpReponse.body.message).to.be.equal("Missing param: url");
   });
 
-  it("shound return 400 if an invalid url is provided", () => {
+  it("shound return 400 if no url is provided when encode", () => {
+    const { shorterUrlController } = makeShorterUrlController();
+    const httpRequest = {
+      body: {},
+    };
+    const httpReponse = shorterUrlController.encode(httpRequest);
+    expect(httpReponse.statusCode).to.equal(400);
+    expect(httpReponse.body).to.be.an("error");
+    expect(httpReponse.body.name).to.be.equal("MissingParamError");
+    expect(httpReponse.body.message).to.be.equal("Missing param: url");
+  });
+
+  it("shound return 400 if an invalid url is provided when encode", () => {
     const { shorterUrlController, urlValidatorStub } =
       makeShorterUrlController();
     const isValid = sinon.stub(urlValidatorStub, "isValid");
@@ -50,15 +67,16 @@ describe("Shorter Url Service", () => {
       },
     };
 
-    const httpReponse = shorterUrlController.handle(httpRequest);
+    const httpReponse = shorterUrlController.encode(httpRequest);
     expect(httpReponse.statusCode).to.equal(400);
     expect(httpReponse.body).to.be.an("error");
     expect(httpReponse.body.name).to.be.equal("InvalidParamError");
     expect(httpReponse.body.message).to.be.equal("Invalid param: url");
   });
 
-  it("shound call URLValidator 200 if an valid url is provided", () => {
-    const { shorterUrlController } = makeShorterUrlController();
+  it("shound return 200 if an valid url is provided when encode", () => {
+    const { shorterUrlController, urlValidatorStub } =
+      makeShorterUrlController();
 
     const httpRequest = {
       body: {
@@ -66,7 +84,15 @@ describe("Shorter Url Service", () => {
       },
     };
 
-    const httpReponse = shorterUrlController.handle(httpRequest);
+    const httpReponse = shorterUrlController.encode(httpRequest);
     expect(httpReponse.statusCode).to.equal(200);
+  });
+  
+  describe("URLValidator Adapter", () => {
+    it("Should return false if validator return false", () => {
+      const urlValidatorAdapter = new URLValidatorAdapter();
+      const isValid = urlValidatorAdapter.isValid(chance.word());
+      expect(isValid).to.be.equal(false);
+    });
   });
 });

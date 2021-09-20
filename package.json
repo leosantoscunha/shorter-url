@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev:server": "ts-node-dev --ignore-watch node_modules src/server.ts",
-    "test": "mocha -r ts-node/register 'tests/*.ts'"
+    "test": "mocha -r ts-node/register tests/tests.spec.ts"
   },
   "keywords": [
     "shorten",
