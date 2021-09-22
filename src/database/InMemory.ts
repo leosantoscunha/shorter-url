@@ -2,9 +2,9 @@ import { Repository } from "./Repository";
 import { Url } from "../dtos/Url"
 export class InMemory implements Repository {
   urlList: Array<Url> = [];
-  private static instance: Repository;
+  private static instance: InMemory;
 
-  public getInstance() {
+  public static getInstance(): InMemory {
 
     if (!InMemory.instance) {
       InMemory.instance = new InMemory();
@@ -14,6 +14,14 @@ export class InMemory implements Repository {
   }
 
   store(urlOriginal: string, newUrl: string): Url {
+    const url = this.get(urlOriginal)
+    if (url) {
+      return {
+        urlOriginal: urlOriginal,
+        newUrl: url
+      };
+    };
+    
     this.urlList.push({ urlOriginal, newUrl });
     return {
       urlOriginal: urlOriginal,

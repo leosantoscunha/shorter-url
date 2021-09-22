@@ -23,7 +23,7 @@ export class DecodeUrlController implements Controller {
     this.urlRepository = urlRepository;
   }
   
-  async handle(request: any): Promise<HttpResponse> {
+  async handle(request: HttpRequest): Promise<HttpResponse> {
     const {url} = request.body;
 
     if (!url) {
@@ -41,24 +41,4 @@ export class DecodeUrlController implements Controller {
 
     return success({ url: urlDecoded });
   }
-
-  // public async redirect(req: any, res:any) {
-  //   const {code} = req.params
-    
-  //   if (!code) {
-  //     return fail(new MissingParamError("code"));
-  //   }
-
-  //   const domain = 'http://localhost:3333/'
-  //   const url = this.urlRepository.get(
-  //     domain + code,
-  //   );
-  //   console.log('urlRepository: ', url)
-  //   // const isValid = this.urlValidator.isValid(url||'');
-  //   // if (!isValid) {
-  //   //   return fail(new InvalidParamError("url"));
-  //   // }
-    
-  //   return res.redirect(300, domain);
-  // }
 }

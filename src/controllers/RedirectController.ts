@@ -8,12 +8,12 @@ import { fail, success } from "../helpers/Http-helper";
 import { Repository } from "../database/Repository"
 import {Controller} from "../protocols/Controller";
 
-export namespace EncodeUrlController {
+export namespace RedirectController {
   export type Request = {
     url: string
   }
 }
-export class EncodeUrlController implements Controller {
+export class RedirectController implements Controller {
   private readonly urlValidator: URLValidator;
 
   private readonly urlRepository: Repository;
@@ -24,20 +24,25 @@ export class EncodeUrlController implements Controller {
   }
   
   async handle(request: any): Promise<HttpResponse> {
-    if (!request.body.url) {
-      return fail(new MissingParamError("url"));
+    const {code} = request.params;
+
+    if (!code) {
+      return fail(new MissingParamError("code"));
     }
 
-    const isValid = this.urlValidator.isValid(request.body.url);
+    const domain = 'http://localhost:3333/'
+   
+    const urlDecoded = this.urlRepository.get(domain + code);
+    if (!urlDecoded){
+      return fail(new InvalidParamError("code"));
+    }
+
+    const isValid = this.urlValidator.isValid(urlDecoded);
     if (!isValid) {
-      return fail(new InvalidParamError("url"));
+      return fail(new InvalidParamError("code"));
     }
-    
-    const url = this.urlRepository.store(
-      request.body.url,
-      ShorterURL.getNewUrl()
-    );
 
-    return success({ url: url.newUrl });
+    return success({ url: urlDecoded });
   }
+
 }

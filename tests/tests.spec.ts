@@ -1,5 +1,7 @@
 import { Chance } from "chance";
 import { expect } from "chai";
+import request from 'supertest';
+import sinon from "sinon";
 
 import { URLValidator } from "../src/protocols/URLValidator";
 import { EncodeUrlController } from "../src/controllers/EncodeUrlController";
@@ -8,10 +10,10 @@ import { InMemory } from "../src/database/InMemory";
 
 import { makeMockRecords } from "./factories/Url-factory"
 import { DecodeUrlController } from "../src/controllers/DecodeUrlController";
-const sinon = require("sinon");
+import app from '../src/server'
 
 const chance = new Chance();
-const urlRepository = new InMemory().getInstance();
+const urlRepository = InMemory.getInstance();
 
 const makeEncodeUrlController = (): any => {
   class URLValidatorStub implements URLValidator {
@@ -49,20 +51,6 @@ const makeDecodeUrlController = (): any => {
 
 
 describe("Shorter Url Service", () => {
-
-  beforeEach(()=>{
-    const loops = chance.integer({min:5, max:20});
-        const { encodeUrlController } = makeEncodeUrlController();
-
-    for (let index = 0; index < loops; index++) {
-      const element = makeMockRecords();
-      const httpRequest = {
-        body: element,
-      };
-      encodeUrlController.handle(httpRequest);
-    }
-
-  });
 
   it("should return 400 if no url is provided when encode", async () => {
     const { encodeUrlController } = makeEncodeUrlController();
@@ -154,22 +142,67 @@ describe("Shorter Url Service", () => {
     expect(httpReponse.statusCode).to.equal(200);
     expect(httpReponse.body.url).to.not.be.null;
 
-    console.log(httpReponse)
     const httpReponseDecode = await decodeUrlController.handle({
       body: {
         url: httpReponse.body.url
       }
     });
-    console.log(httpReponseDecode)
-
     expect(httpReponseDecode.body.url).to.be.equal(mockUrl);
   });
 
   describe("URLValidator Adapter", () => {
-    it("Should return false if validator return false", async () => {
+    it("Should return false if validator return false", (done) => {
       const urlValidatorAdapter = new URLValidatorAdapter();
       const isValid = urlValidatorAdapter.isValid(chance.word());
       expect(isValid).to.be.equal(false);
+      done()
+    });
+  });
+});
+
+
+describe('GET /redirect', () => {
+  const mockUrl = 'https://www.musclefood.com/bundles/slimming-meat-hampers.html';    
+  var agent = request(app);
+
+  it('should return 200 if an valid url is provided when encode', async () => {
+    await agent.post('/encode').type('json').send({body: {url: mockUrl}})
+      .then((response) => {
+        const {statusCode, body: {url}} = response
+        expect(statusCode).to.equal(200);
+        expect(url).not.be.null;
+      });
+  });
+
+  it('should return 200 if an valid url is provided when decode', async () => {
+    await agent.post('/encode').type('json').send({body: {url: mockUrl}})
+        .then(async (response) => {
+          const {statusCode:encodeStatus, body: {url}} = response
+          expect(encodeStatus).to.equal(200);
+          expect(url).not.be.null;
+          await agent.post('/decode').type('json').send({body: {url: url}}).then((response) => {
+            const {statusCode, body} = response
+            expect(statusCode).to.equal(200);
+            expect(body.url).to.equal(mockUrl);
+            expect(body.url).not.be.null;
+        });
+    });
+  });
+
+  it('should return 301 if an valid url is provided and make redirect', async () => {
+    var pathname: string;
+    
+    await agent.post('/encode').type('json').send({body: {url: mockUrl}}).then(async (response) => {
+      const {body, statusCode} = response
+      expect(statusCode).to.equal(200);
+      expect(body.url).not.be.null;
+
+      pathname = new URL(body.url).pathname;
+      return await agent.get(pathname).type('json').then((response) => {
+        const {header, statusCode} = response 
+        expect(header.location).to.equal(mockUrl);
+        expect(statusCode).to.equal(301);
+      })
     });
   });
 });

@@ -1,6 +1,6 @@
-import {Controller}  from '../../protocols/Controller'
+import {Controller}  from '../../protocols/Controller';
 
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 
 export const adaptRoute = (controller: Controller) => {
   return async (req: Request, res: Response) => {

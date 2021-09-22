@@ -4,6 +4,6 @@ import { URLValidatorAdapter } from "../../../utils/URLValidatorAdapter"
 import { InMemory } from "../../../database/InMemory"
 
 export const makeEncodeUrlController = (): Controller => {
-    const controller = new EncodeUrlController(new URLValidatorAdapter(), new InMemory().getInstance())
+    const controller = new EncodeUrlController(new URLValidatorAdapter(), InMemory.getInstance())
     return controller
   }
