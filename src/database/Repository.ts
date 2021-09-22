@@ -1,6 +1,6 @@
 import { Url } from "../dtos/Url"
 
-export interface URLRepository {
+export interface Repository {
   store(urlOriginal: string, newUrl: string): Url;
   get(urlOriginal: string): string | null;
 }

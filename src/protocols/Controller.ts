@@ -1,8 +1,5 @@
-import { HttpRequest, HttpResponse } from "./Http";
+import { HttpResponse } from "./Http";
 
-interface Controller {
-  encode(httpRequest: HttpRequest): HttpResponse;
-  decode(httpRequest: HttpRequest): HttpResponse;
+export interface Controller<T = any> {
+  handle: (request: T) => Promise<HttpResponse>
 }
-
-export default Controller;

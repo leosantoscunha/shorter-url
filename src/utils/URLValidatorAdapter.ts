@@ -6,8 +6,6 @@ export class URLValidatorAdapter implements URLValidator {
     try {
       new URL(url);
     } catch (e) {
-      // console.error(url);
-      // console.error(e);
       return false;
     }
     return true;

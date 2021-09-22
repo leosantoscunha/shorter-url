@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { ShorterUrlController } from '../src/controllers/ShorterUrlController';
+import { EncodeUrlController } from '../src/controllers/EncodeUrlController';
 import { InMemory } from '../src/database/InMemory';
 import app from '../src/server'
 import { URLValidatorAdapter } from '../src/utils/URLValidatorAdapter';
@@ -17,6 +17,7 @@ describe('GET /redirect', function() {
       })
       .set('Accept', 'application/json')
       .end(function(err, res) {
+        console.log(res.body)
         if (err) return done(err);
         return done();
       });

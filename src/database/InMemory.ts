@@ -1,6 +1,6 @@
-import { URLRepository } from "./URLRepository";
+import { Repository } from "./Repository";
 import { Url } from "../dtos/Url"
-export class InMemory implements URLRepository {
+export class InMemory implements Repository {
   private urlList: Array<Url> = [];
 
   store(urlOriginal: string, newUrl: string): Url {
@@ -17,6 +17,5 @@ export class InMemory implements URLRepository {
     });
     return url !== undefined ? url.urlOriginal : null;
   }
-
   
 }
