@@ -18,7 +18,10 @@
         "prettier"
     ],
     "rules": {
-        "allowForLoopAfterthoughts": true,
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "allowDefinitionFiles":"off",
+        "allowDeclarations": "off",
+        "no-multi-assign":"off",
         "import/prefer-default-export": "off",
         "class/class-methods-use-this": "off",
         "prettier/prettier": "error",

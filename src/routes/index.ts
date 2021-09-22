@@ -8,7 +8,7 @@ import { makeRedirectController } from "../main/factories/controllers/RedirectCo
 const routes = Router();
 
 routes.post("/encode", adaptRoute(makeEncodeUrlController()));
-routes.post("/decode",adaptRoute(makeDecodeUrlController()));
+routes.post("/decode", adaptRoute(makeDecodeUrlController()));
 routes.get("/:code", adaptRedirectRoute(makeRedirectController()));
 
 export default routes;

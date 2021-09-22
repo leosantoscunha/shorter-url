@@ -1,6 +1,6 @@
 import { Chance } from "chance";
 import { expect } from "chai";
-import request from 'supertest';
+import request from "supertest";
 import sinon from "sinon";
 
 import { URLValidator } from "../src/protocols/URLValidator";
@@ -8,9 +8,8 @@ import { EncodeUrlController } from "../src/controllers/EncodeUrlController";
 import { URLValidatorAdapter } from "../src/utils/URLValidatorAdapter";
 import { InMemory } from "../src/database/InMemory";
 
-import { makeMockRecords } from "./factories/Url-factory"
 import { DecodeUrlController } from "../src/controllers/DecodeUrlController";
-import app from '../src/server'
+import app from "../src/server";
 
 const chance = new Chance();
 const urlRepository = InMemory.getInstance();
@@ -49,9 +48,7 @@ const makeDecodeUrlController = (): any => {
   };
 };
 
-
 describe("Shorter Url Service", () => {
-
   it("should return 400 if no url is provided when encode", async () => {
     const { encodeUrlController } = makeEncodeUrlController();
     const httpRequest = {
@@ -65,8 +62,7 @@ describe("Shorter Url Service", () => {
   });
 
   it("should return 400 if an invalid url is provided when encode", async () => {
-    const { encodeUrlController, urlValidatorStub } =
-      makeEncodeUrlController();
+    const { encodeUrlController, urlValidatorStub } = makeEncodeUrlController();
     const isValid = sinon.stub(urlValidatorStub, "isValid");
     isValid(false);
 
@@ -95,7 +91,7 @@ describe("Shorter Url Service", () => {
     const httpReponse = await encodeUrlController.handle(httpRequest);
     expect(httpReponse.statusCode).to.equal(200);
   });
-  
+
   it("should return 400 if no url is provided when decode", async () => {
     const { decodeUrlController } = makeDecodeUrlController();
     const httpRequest = {
@@ -109,8 +105,7 @@ describe("Shorter Url Service", () => {
   });
 
   it("should return 400 if an invalid url is provided when decode", async () => {
-    const { decodeUrlController, urlValidatorStub } =
-      makeDecodeUrlController();
+    const { decodeUrlController, urlValidatorStub } = makeDecodeUrlController();
     const isValid = sinon.stub(urlValidatorStub, "isValid");
     isValid(false);
 
@@ -130,7 +125,8 @@ describe("Shorter Url Service", () => {
   it("should return 200 if an valid url is provided when decode", async () => {
     const { encodeUrlController } = makeEncodeUrlController();
     const { decodeUrlController } = makeDecodeUrlController();
-    const mockUrl = 'https://www.musclefood.com/bundles/slimming-meat-hampers.html';
+    const mockUrl =
+      "https://www.musclefood.com/bundles/slimming-meat-hampers.html";
 
     const httpRequest = {
       body: {
@@ -144,8 +140,8 @@ describe("Shorter Url Service", () => {
 
     const httpReponseDecode = await decodeUrlController.handle({
       body: {
-        url: httpReponse.body.url
-      }
+        url: httpReponse.body.url,
+      },
     });
     expect(httpReponseDecode.body.url).to.be.equal(mockUrl);
   });
@@ -155,54 +151,77 @@ describe("Shorter Url Service", () => {
       const urlValidatorAdapter = new URLValidatorAdapter();
       const isValid = urlValidatorAdapter.isValid(chance.word());
       expect(isValid).to.be.equal(false);
-      done()
+      done();
     });
   });
 });
 
+describe("GET /redirect", () => {
+  const mockUrl =
+    "https://www.musclefood.com/bundles/slimming-meat-hampers.html";
+  const agent = request(app);
 
-describe('GET /redirect', () => {
-  const mockUrl = 'https://www.musclefood.com/bundles/slimming-meat-hampers.html';    
-  var agent = request(app);
-
-  it('should return 200 if an valid url is provided when encode', async () => {
-    await agent.post('/encode').type('json').send({body: {url: mockUrl}})
+  it("should return 200 if an valid url is provided when encode", async () => {
+    await agent
+      .post("/encode")
+      .type("json")
+      .send({ body: { url: mockUrl } })
       .then((response) => {
-        const {statusCode, body: {url}} = response
+        const {
+          statusCode,
+          body: { url },
+        } = response;
         expect(statusCode).to.equal(200);
         expect(url).not.be.null;
       });
   });
 
-  it('should return 200 if an valid url is provided when decode', async () => {
-    await agent.post('/encode').type('json').send({body: {url: mockUrl}})
-        .then(async (response) => {
-          const {statusCode:encodeStatus, body: {url}} = response
-          expect(encodeStatus).to.equal(200);
-          expect(url).not.be.null;
-          await agent.post('/decode').type('json').send({body: {url: url}}).then((response) => {
-            const {statusCode, body} = response
+  it("should return 200 if an valid url is provided when decode", async () => {
+    await agent
+      .post("/encode")
+      .type("json")
+      .send({ body: { url: mockUrl } })
+      .then(async (response) => {
+        const {
+          statusCode: encodeStatus,
+          body: { url },
+        } = response;
+        expect(encodeStatus).to.equal(200);
+        expect(url).not.be.null;
+        await agent
+          .post("/decode")
+          .type("json")
+          .send({ body: { url } })
+          .then((response) => {
+            const { statusCode, body } = response;
             expect(statusCode).to.equal(200);
             expect(body.url).to.equal(mockUrl);
             expect(body.url).not.be.null;
-        });
-    });
+          });
+      });
   });
 
-  it('should return 301 if an valid url is provided and make redirect', async () => {
-    var pathname: string;
-    
-    await agent.post('/encode').type('json').send({body: {url: mockUrl}}).then(async (response) => {
-      const {body, statusCode} = response
-      expect(statusCode).to.equal(200);
-      expect(body.url).not.be.null;
+  it("should return 301 if an valid url is provided and make redirect", async () => {
+    let pathname: string;
 
-      pathname = new URL(body.url).pathname;
-      return await agent.get(pathname).type('json').then((response) => {
-        const {header, statusCode} = response 
-        expect(header.location).to.equal(mockUrl);
-        expect(statusCode).to.equal(301);
-      })
-    });
+    await agent
+      .post("/encode")
+      .type("json")
+      .send({ body: { url: mockUrl } })
+      .then(async (response) => {
+        const { body, statusCode } = response;
+        expect(statusCode).to.equal(200);
+        expect(body.url).not.be.null;
+
+        pathname = new URL(body.url).pathname;
+        return await agent
+          .get(pathname)
+          .type("json")
+          .then((response) => {
+            const { header, statusCode } = response;
+            expect(header.location).to.equal(mockUrl);
+            expect(statusCode).to.equal(301);
+          });
+      });
   });
 });

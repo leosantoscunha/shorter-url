@@ -1,18 +1,11 @@
-/* eslint-disable class-methods-use-this */
-import { ShorterURL } from "../utils/ShorterURL";
-import { HttpRequest, HttpResponse } from "../protocols/Http";
+import { HttpResponse } from "../protocols/Http";
 import { URLValidator } from "../protocols/URLValidator";
 import { MissingParamError } from "../errors/MissingParamError";
 import { InvalidParamError } from "../errors/InvalidParamError";
 import { fail, success } from "../helpers/Http-helper";
-import { Repository } from "../database/Repository"
-import {Controller} from "../protocols/Controller";
+import { Repository } from "../database/Repository";
+import { Controller } from "../protocols/Controller";
 
-export namespace RedirectController {
-  export type Request = {
-    url: string
-  }
-}
 export class RedirectController implements Controller {
   private readonly urlValidator: URLValidator;
 
@@ -22,18 +15,18 @@ export class RedirectController implements Controller {
     this.urlValidator = urlValidator;
     this.urlRepository = urlRepository;
   }
-  
+
   async handle(request: any): Promise<HttpResponse> {
-    const {code} = request.params;
+    const { code } = request.params;
 
     if (!code) {
       return fail(new MissingParamError("code"));
     }
 
-    const domain = 'http://localhost:3333/'
-   
+    const domain = "http://localhost:3333/";
+
     const urlDecoded = this.urlRepository.get(domain + code);
-    if (!urlDecoded){
+    if (!urlDecoded) {
       return fail(new InvalidParamError("code"));
     }
 
@@ -44,5 +37,4 @@ export class RedirectController implements Controller {
 
     return success({ url: urlDecoded });
   }
-
 }
