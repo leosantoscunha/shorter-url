@@ -11,6 +11,7 @@ import { DecodeUrlController } from "../src/controllers/DecodeUrlController";
 const sinon = require("sinon");
 
 const chance = new Chance();
+const urlRepository = new InMemory().getInstance();
 
 const makeEncodeUrlController = (): any => {
   class URLValidatorStub implements URLValidator {
@@ -19,7 +20,6 @@ const makeEncodeUrlController = (): any => {
     }
   }
   const urlValidatorStub = new URLValidatorStub();
-  const urlRepository = new InMemory();
   const encodeUrlController = new EncodeUrlController(
     urlValidatorStub,
     urlRepository
@@ -37,7 +37,6 @@ const makeDecodeUrlController = (): any => {
     }
   }
   const urlValidatorStub = new URLValidatorStub();
-  const urlRepository = new InMemory();
   const decodeUrlController = new DecodeUrlController(
     urlValidatorStub,
     urlRepository

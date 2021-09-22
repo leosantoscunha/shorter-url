@@ -1,7 +1,17 @@
 import { Repository } from "./Repository";
 import { Url } from "../dtos/Url"
 export class InMemory implements Repository {
-  private urlList: Array<Url> = [];
+  urlList: Array<Url> = [];
+  private static instance: Repository;
+
+  public getInstance() {
+
+    if (!InMemory.instance) {
+      InMemory.instance = new InMemory();
+    }
+
+    return InMemory.instance;
+  }
 
   store(urlOriginal: string, newUrl: string): Url {
     this.urlList.push({ urlOriginal, newUrl });
